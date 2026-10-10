@@ -1,6 +1,16 @@
-(function($){
-  var $header = $('#header');
-  if (window.innerWidth < 480 && !$header.hasClass('slide-hide')) {
-    $header.addClass('slide-hide');
-  }
+/**
+ * 侧栏布局改造说明：
+ * 原实现会在窗口宽度 < 480px 时给 `#header` 加 `.slide-hide`（height:0），
+ * 使顶部页头整块折叠隐藏。
+ *
+ * 新版布局已移除 `#header`，改为「左侧固定侧边栏 + 右侧主内容区」；
+ * 侧栏在 < 1024px 时降级为顶部静态区块（头像 + 导航），
+ * 任何宽度下都不应整块隐藏，因此这段逻辑已废弃并删除。
+ *
+ * 本文件保留为空脚本（post.pug 仍会加载），仅作为历史决策记录，
+ * 以免留下指向不存在文件的悬空引用。
+ */
+(function ($) {
+  'use strict';
+  // no-op：不再对任何元素添加 .slide-hide
 })(jQuery);
