@@ -268,8 +268,12 @@ a:hover {
   background-color: #f4eee4;
   border-bottom: 1px solid #ece4d9;
   color: #2f2b26;
+  line-height: 1.65;
 }
 .sidebar__inner {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   padding: 1.1rem;
 }
 .layout-main {
@@ -379,7 +383,7 @@ a:hover {
   color: #c0504d;
 }
 .sidebar-section {
-  margin-top: 1.804rem;
+  margin-top: 1.32rem;
 }
 .sidebar-section__title {
   font-size: 0.74rem;
@@ -419,10 +423,10 @@ a:hover {
   margin: 0;
   padding: 0;
 }
-.year-list li {
+.year-item {
   margin: 0;
 }
-.year-list a {
+.year-summary {
   display: -webkit-box;
   display: -moz-box;
   display: -webkit-flex;
@@ -439,14 +443,135 @@ a:hover {
   -ms-flex-pack: justify;
   -webkit-justify-content: space-between;
   justify-content: space-between;
-  padding: 0.4rem 0;
+  gap: 0.4rem;
+  padding: 0.32rem 0;
+  color: #2f2b26;
+  cursor: pointer;
+  list-style: none;
+  -webkit-transition: color 0.25s ease;
+  -moz-transition: color 0.25s ease;
+  -ms-transition: color 0.25s ease;
+  transition: color 0.25s ease;
+}
+.year-summary::-webkit-details-marker {
+  display: none;
+}
+.year-summary::marker {
+  content: '';
+}
+.year-summary:hover {
+  color: #c0504d;
+}
+.year-label {
+  font-weight: 600;
+}
+.year-tail {
+  display: -webkit-inline-box;
+  display: -moz-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-box;
+  display: inline-flex;
+  -webkit-box-align: center;
+  -moz-box-align: center;
+  -ms-flex-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+  gap: 0.45rem;
+}
+.year-caret {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  -webkit-transform: rotate(-45deg);
+  -moz-transform: rotate(-45deg);
+  -ms-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+  -webkit-transition: -webkit-transform 0.25s ease;
+  -moz-transition: -moz-transform 0.25s ease;
+  -ms-transition: -ms-transform 0.25s ease;
+  transition: transform 0.25s ease;
+  opacity: 0.5;
+  margin-top: -2px;
+}
+.year-group[open] > .year-summary .year-caret {
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+  margin-top: -4px;
+}
+.month-list {
+  list-style: none;
+  margin: 0 0 0.35rem 0;
+  padding: 0 0 0 0.7rem;
+  border-left: 1px solid #ece4d9;
+}
+.month-item {
+  margin: 0;
+}
+.month-link {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: box;
+  display: flex;
+  -webkit-box-align: center;
+  -moz-box-align: center;
+  -ms-flex-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  -moz-box-pack: justify;
+  -ms-flex-pack: justify;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+  gap: 0.3rem;
+  padding: 0.24rem 0 0.08rem;
+  font-size: 0.84rem;
+  font-weight: 600;
   color: #2f2b26;
   -webkit-transition: color 0.25s ease;
   -moz-transition: color 0.25s ease;
   -ms-transition: color 0.25s ease;
   transition: color 0.25s ease;
 }
-.year-list a:hover {
+.month-link:hover {
+  color: #c0504d;
+}
+.month-label {
+  letter-spacing: 0.02em;
+}
+.month-count {
+  font-size: 0.7rem;
+  color: #8c8378;
+  opacity: 0.8;
+}
+.post-list {
+  list-style: none;
+  margin: 0 0 0.2rem 0;
+  padding: 0;
+}
+.post-item {
+  margin: 0;
+}
+.post-link {
+  display: block;
+  padding: 0.1rem 0 0.1rem 0.6rem;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: #8c8378;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-transition: color 0.25s ease;
+  -moz-transition: color 0.25s ease;
+  -ms-transition: color 0.25s ease;
+  transition: color 0.25s ease;
+}
+.post-link:hover {
   color: #c0504d;
 }
 .year-count {
@@ -458,7 +583,7 @@ a:hover {
   line-height: 1.6;
 }
 .sidebar-socials {
-  margin-top: 1.804rem;
+  margin-top: 1.1rem;
   display: -webkit-box;
   display: -moz-box;
   display: -webkit-flex;
@@ -613,7 +738,7 @@ a:hover {
     height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 2.2rem 1.1rem;
+    padding: 1.76rem 1.1rem 0.8rem;
   }
   .layout {
     padding-left: 14rem;
@@ -643,15 +768,15 @@ a:hover {
     align-items: center;
     text-align: center;
     gap: 0.8rem;
-    padding-bottom: 1.87rem;
+    padding-bottom: 1.43rem;
     border-bottom: 1px solid #ece4d9;
   }
   .sidebar-profile__meta {
     width: 100%;
   }
   .sidebar-nav {
-    margin-top: 1.87rem;
-    padding-bottom: 1.87rem;
+    margin-top: 1.43rem;
+    padding-bottom: 1.43rem;
     border-bottom: 1px solid #ece4d9;
   }
   .navigation {
@@ -664,7 +789,7 @@ a:hover {
   }
   .navigation li a {
     display: block;
-    padding: 0.42rem 0;
+    padding: 0.34rem 0;
   }
   .sidebar-section {
     display: block;
