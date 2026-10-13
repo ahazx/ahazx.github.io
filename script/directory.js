@@ -3,12 +3,12 @@
  *
  * 背景
  * - 本站是静态站，每次点文章都是整页重新加载，侧栏（`.sidebar__inner`）会被重建，
- *   它自己的 overflow 滚动位置会被重置为 0 —— 用户反馈的「往下滑点 25 年内容时，目录往上跳」就是这个。
+ *   它自己的 overflow 滚动位置会被重置为 0 —— 用户反馈的「往下滑点文章时，目录往上跳」就是这个。
  * - 参考 demo 是 SPA，点文章不重建侧栏，所以不会跳；静态站的等价做法就是把这两样状态存起来再还原。
  *
  * 做两件事
  * 1. 展开的年份：写入 localStorage，任意页面加载时还原为展开
- * 2. 侧栏滚动位置：写入 sessionStorage（同一标签页内有效），加载时还原
+ * 2. 侧栏滚动位置：写入 localStorage（不用 sessionStorage —— 这样即使在新标签页打开也能还原），加载时还原
  *
  * 闪动保护
  * - 还原期间给 <html> 临时挂 .dir-restoring 类，配合 site.styl 里的 visibility:hidden，
@@ -18,10 +18,15 @@
  */
 (function () {
   'use strict';
-  var OPEN_KEY = 'myblog-directory-open';       // localStorage：展开的年份
-  var SCROLL_KEY = 'myblog-sidebar-scroll';     // sessionStorage：侧栏滚动位置
+  var OPEN_KEY = 'myblog-directory-open';       // 展开的年份
+  var SCROLL_KEY = 'myblog-sidebar-scroll';     // 侧栏滚动位置
   var RESTORING_CLASS = 'dir-restoring';
   var root = document.documentElement;
+
+  // 关掉浏览器自带的滚动还原，避免它在 load 之后把内部滚动容器重置回 0，覆盖我们的还原
+  try {
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  } catch (e) { /* 忽略 */ }
 
   function readOpenYears() {
     try {
@@ -48,7 +53,7 @@
 
   function readScroll() {
     try {
-      var raw = sessionStorage.getItem(SCROLL_KEY);
+      var raw = localStorage.getItem(SCROLL_KEY);
       return raw ? parseInt(raw, 10) : 0;
     } catch (e) {
       return 0;
@@ -61,6 +66,7 @@
     if (!sc) return;
     var top = readScroll();
     if (!top || top <= 0) return;
+    if (Math.abs(sc.scrollTop - top) < 1) return; // 已在目标位置，别动
     var prev = sc.style.scrollBehavior;
     sc.style.scrollBehavior = 'auto';
     sc.scrollTop = top;
@@ -101,31 +107,41 @@
     });
   }
 
-  /** 监听侧栏滚动，rAF 节流后写入 sessionStorage */
-  var scrollScheduled = false;
-  function scheduleSaveScroll() {
-    if (scrollScheduled) return;
-    scrollScheduled = true;
-    requestAnimationFrame(function () {
-      scrollScheduled = false;
-      var sc = getScroller();
-      if (!sc) return;
-      try {
-        sessionStorage.setItem(SCROLL_KEY, String(sc.scrollTop));
-      } catch (e) {
-        /* 存储不可用则忽略 */
-      }
-    });
+  /** 同步写入侧栏滚动位置（时间节流 120ms，够便宜也够稳，不依赖 rAF 以免卸载阶段丢失） */
+  var lastSave = 0;
+  var pendingSave = null;
+  function saveScrollNow() {
+    var sc = getScroller();
+    if (!sc) return;
+    try {
+      localStorage.setItem(SCROLL_KEY, String(sc.scrollTop));
+    } catch (e) {
+      /* 存储不可用则忽略 */
+    }
+  }
+  function onSidebarScroll() {
+    var now = Date.now();
+    if (now - lastSave > 120) {
+      lastSave = now;
+      saveScrollNow();
+    } else if (pendingSave === null) {
+      // 兜底：节流窗口内的最后一次滚动也要记下来
+      pendingSave = setTimeout(function () {
+        pendingSave = null;
+        lastSave = Date.now();
+        saveScrollNow();
+      }, 120);
+    }
   }
 
   function bindScroll() {
     var sc = getScroller();
     if (!sc) return;
-    sc.addEventListener('scroll', scheduleSaveScroll, { passive: true });
-    // 离开页面前补记一次，避免最后一次滚动还没被 rAF 记下
-    window.addEventListener('pagehide', scheduleSaveScroll);
+    sc.addEventListener('scroll', onSidebarScroll, { passive: true });
+    // 离开页面前同步补记一次（卸载阶段 rAF 不会执行，所以这里必须同步写）
+    window.addEventListener('pagehide', saveScrollNow);
     document.addEventListener('visibilitychange', function () {
-      if (document.visibilityState === 'hidden') scheduleSaveScroll();
+      if (document.visibilityState === 'hidden') saveScrollNow();
     });
   }
 
@@ -135,6 +151,8 @@
     restore();
     bind();
     bindScroll();
+    // 保险：有些浏览器会在 load 之后才最终确定内部滚动容器的位置，load 后再还原一次（幂等）
+    window.addEventListener('load', restoreScroll);
   }
 
   if (document.readyState === 'loading') {
