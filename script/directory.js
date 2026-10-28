@@ -19,18 +19,28 @@
 (function () {
   'use strict';
   var OPEN_KEY = 'myblog-directory-open';       // 展开的年份
+  var TAG_OPEN_KEY = 'myblog-taggroup-open';    // 展开的标签族（2026-10-28 新增）
   var SCROLL_KEY = 'myblog-sidebar-scroll';     // 侧栏滚动位置
   var RESTORING_CLASS = 'dir-restoring';
   var root = document.documentElement;
+
+  /**
+   * 需要持久化展开状态的两类 <details> 折叠组。
+   * 结构一致（宿主容器 → 组 → 标签文字），只是 key 与选择器不同，所以用同一套逻辑处理。
+   */
+  var SCOPES = [
+    { key: OPEN_KEY, host: '.sidebar-archives', group: '.year-group', label: '.year-label' },
+    { key: TAG_OPEN_KEY, host: '.sidebar-tags', group: '.tag-group', label: '.tag-group__label' }
+  ];
 
   // 关掉浏览器自带的滚动还原，避免它在 load 之后把内部滚动容器重置回 0，覆盖我们的还原
   try {
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
   } catch (e) { /* 忽略 */ }
 
-  function readOpenYears() {
+  function readOpenList(key) {
     try {
-      var raw = localStorage.getItem(OPEN_KEY);
+      var raw = localStorage.getItem(key);
       if (!raw) return [];
       var arr = JSON.parse(raw);
       return Array.isArray(arr) ? arr : [];
@@ -39,9 +49,9 @@
     }
   }
 
-  function writeOpenYears(arr) {
+  function writeOpenList(key, arr) {
     try {
-      localStorage.setItem(OPEN_KEY, JSON.stringify(arr));
+      localStorage.setItem(key, JSON.stringify(arr));
     } catch (e) {
       /* 存储不可用，仅本次会话生效 */
     }
@@ -75,34 +85,36 @@
 
   /** 还原展开状态 + 滚动位置，最后解除隐藏类 */
   function restore() {
-    var openYears = readOpenYears();
-    if (openYears.length) {
-      var groups = document.querySelectorAll('.sidebar-archives .year-group');
-      groups.forEach(function (g) {
-        var label = g.querySelector('.year-label');
-        if (label && openYears.indexOf(label.textContent) !== -1) {
+    SCOPES.forEach(function (scope) {
+      var openList = readOpenList(scope.key);
+      if (!openList.length) return;
+      document.querySelectorAll(scope.host + ' ' + scope.group).forEach(function (g) {
+        var label = g.querySelector(scope.label);
+        if (label && openList.indexOf(label.textContent.trim()) !== -1) {
           g.setAttribute('open', '');
         }
       });
-    }
-    // 关键顺序：先展开年份（让可滚动高度成立），再还原滚动位置，
+    });
+    // 关键顺序：先展开折叠组（让可滚动高度成立），再还原滚动位置，
     // 最后才解除 visibility 隐藏 —— 三步同一个同步任务里完成，浏览器下一帧一次画对
     restoreScroll();
     root.classList.remove(RESTORING_CLASS);
   }
 
-  /** 绑定用户点击：每次 toggle 后把当前所有展开的年份写回 localStorage */
+  /** 绑定用户点击：每次 toggle 后把该组容器内所有展开项写回对应的 localStorage key */
   function bind() {
-    var groups = document.querySelectorAll('.sidebar-archives .year-group');
-    if (!groups.length) return;
-    groups.forEach(function (g) {
-      g.addEventListener('toggle', function () {
-        var open = [];
-        document.querySelectorAll('.sidebar-archives .year-group[open]').forEach(function (og) {
-          var l = og.querySelector('.year-label');
-          if (l) open.push(l.textContent);
+    SCOPES.forEach(function (scope) {
+      var groups = document.querySelectorAll(scope.host + ' ' + scope.group);
+      if (!groups.length) return;
+      groups.forEach(function (g) {
+        g.addEventListener('toggle', function () {
+          var open = [];
+          document.querySelectorAll(scope.host + ' ' + scope.group + '[open]').forEach(function (og) {
+            var l = og.querySelector(scope.label);
+            if (l) open.push(l.textContent.trim());
+          });
+          writeOpenList(scope.key, open);
         });
-        writeOpenYears(open);
       });
     });
   }
