@@ -2221,36 +2221,7 @@ pre .javascript .function {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
-.article .callout .callout-title {
-  display: -webkit-box;
-  display: -moz-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: box;
-  display: flex;
-  -webkit-box-align: center;
-  -moz-box-align: center;
-  -ms-flex-align: center;
-  -webkit-align-items: center;
-  align-items: center;
-  gap: 7px;
-  margin: 0;
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 1.5;
-  color: #3b5bdb;
-}
-.article .callout .callout-title svg {
-  -webkit-box-flex: 1;
-  -moz-box-flex: 1;
-  box-flex: 1;
-  -webkit-flex: 0 0 auto;
-  -ms-flex: 0 0 auto;
-  flex: 0 0 auto;
-  display: block;
-}
 .article .callout .callout-body {
-  margin-top: 4px;
   color: #1f2937;
   font-size: 15px;
 }
@@ -2284,18 +2255,12 @@ pre .javascript .function {
   border-left-color: #0e7490;
   background: #ecf8fb;
 }
-.article .callout.callout-cyan .callout-title {
-  color: #0e7490;
-}
 .article .callout.callout-cyan .callout-body li::marker {
   color: #0e7490;
 }
 .article .callout.callout-teal {
   border-left-color: #0f766e;
   background: #e6f6f3;
-}
-.article .callout.callout-teal .callout-title {
-  color: #0f766e;
 }
 .article .callout.callout-teal .callout-body li::marker {
   color: #0f766e;
@@ -2304,18 +2269,12 @@ pre .javascript .function {
   border-left-color: #15803d;
   background: #ecf7ee;
 }
-.article .callout.callout-green .callout-title {
-  color: #15803d;
-}
 .article .callout.callout-green .callout-body li::marker {
   color: #15803d;
 }
 .article .callout.callout-yellow {
   border-left-color: #a16207;
   background: #fdf6e3;
-}
-.article .callout.callout-yellow .callout-title {
-  color: #a16207;
 }
 .article .callout.callout-yellow .callout-body li::marker {
   color: #a16207;
@@ -2324,18 +2283,12 @@ pre .javascript .function {
   border-left-color: #c2410c;
   background: #fdf1e8;
 }
-.article .callout.callout-orange .callout-title {
-  color: #c2410c;
-}
 .article .callout.callout-orange .callout-body li::marker {
   color: #c2410c;
 }
 .article .callout.callout-red {
   border-left-color: #b91c1c;
   background: #fdeeee;
-}
-.article .callout.callout-red .callout-title {
-  color: #b91c1c;
 }
 .article .callout.callout-red .callout-body li::marker {
   color: #b91c1c;
@@ -2344,18 +2297,12 @@ pre .javascript .function {
   border-left-color: #7c3aed;
   background: #f4eefd;
 }
-.article .callout.callout-purple .callout-title {
-  color: #7c3aed;
-}
 .article .callout.callout-purple .callout-body li::marker {
   color: #7c3aed;
 }
 .article .callout.callout-gray {
   border-left-color: #6b7280;
   background: #f4f5f7;
-}
-.article .callout.callout-gray .callout-title {
-  color: #6b7280;
 }
 .article .callout.callout-gray .callout-body li::marker {
   color: #6b7280;
