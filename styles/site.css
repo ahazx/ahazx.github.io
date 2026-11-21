@@ -2435,11 +2435,6 @@ pre .keyword,
 pre .javascript .function {
   color: #2f7a5c;
 }
-pre a.toc-link:before,
-pre a.toc-link:after {
-  content: none;
-  margin: 0;
-}
 .article .callout {
   margin: 22px 0;
   padding: 13px 18px 14px 18px;
@@ -2542,4 +2537,9 @@ pre a.toc-link:after {
     padding: 11px 14px 12px 14px;
     margin: 18px 0;
   }
+}
+.content a.toc-link:before,
+.content a.toc-link:after {
+  content: none;
+  margin: 0;
 }
