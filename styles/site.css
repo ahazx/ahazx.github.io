@@ -2204,15 +2204,50 @@ footer a:hover {
   margin: 0;
 }
 .article .content table {
-  display: block;
-  width: max-content;
+  display: table;
+  width: 100%;
   max-width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
+  table-layout: auto;
+  border-collapse: collapse;
 }
 .article .content table th,
 .article .content table td {
-  white-space: nowrap;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+.article .tbl-duo {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: box;
+  display: flex;
+  -webkit-box-lines: multiple;
+  -moz-box-lines: multiple;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  gap: 18px;
+  -webkit-box-align: start;
+  -moz-box-align: start;
+  -ms-flex-align: start;
+  -webkit-align-items: flex-start;
+  align-items: flex-start;
+  margin: 1em 0;
+}
+.article .tbl-duo > div {
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  box-flex: 1;
+  -webkit-flex: 1 1 300px;
+  -ms-flex: 1 1 300px;
+  flex: 1 1 300px;
+  min-width: 0;
+}
+.article .tbl-duo .content table,
+.article .tbl-duo table {
+  margin: 0;
 }
 .article pre,
 .article code {
